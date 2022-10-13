@@ -17,16 +17,34 @@ class DiscogAPIInterface():
         logging.info("  stream-oriented e full duplex'. Este é o tipo de socket sobre o qual")
         logging.info("  o protocolo TCP é implementado.")
         logging.info("  Referências: `man 2 socket` e `man 7 tcp`")
-        logging.info("`logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')`")
         self.sock = S.socket(family=S.AF_INET, type=S.SOCK_STREAM)
-        pprint(self.sock)
+
+        logging.info("Usamos a função SSLContext.wrap_socket(self.sock) para criar um wrapper sobre")
+        logging.info("  sobre o nosso socket implementando o protocolo TLS/SSL. Isto é feito ")
+        logging.info("  pois a API que será consumida é em HTTPS, isto é, HTTP sobre TLS. Note-se")
+        logging.info("  que os protocolos HTTP e TLS são da camada de aplicação (camada 7).")
+        logging.info("Estabelecemos conexão com o servidor usando SSLSocket.connect_ex")
+        logging.info("  para abstrair sobre o protocolo TLS. Assim não precisamos implementar")
+        logging.info("  relacionado ao protocolo")
+        ssl_context = ssl.create_default_context()
+        self.ssl_sock = ssl_context.wrap_socket(self.sock, server_hostname='api.discogs.com')
+
+        errno = self.ssl_sock.connect_ex(('api.discogs.com', 443))
+        if errno != 0:
+            logging.error(f"connect_ex erro {errno}. Saindo")
+            exit(1)
+        logging.info("Estabelecemos com sucesso uma conexão com o servidor usando a ")
+        logging.info("  interface oferecida por SSLSocket.")
 
     def set_logging(self):
         logging.basicConfig(format='(%(asctime)s)%(levelname)s: %(message)s.', datefmt='%H:%M:%S', level=logging.DEBUG)
 
+    def queryArtistInfo(self, artist_id):
+        return {}
 
 def main():
     dapi = DiscogAPIInterface()
+    print(dapi.queryArtistInfo('465904'))
     pass
 
 if __name__ == "__main__":
