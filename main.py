@@ -5,8 +5,12 @@ import logging
 import unittest
 from pprint import pprint
 
-CONSUMER_KEY = "SMkvCrIgyfPDvGnJSLrI"
-CONSUMER_SECRET = "NsEZUIIcKegWRHInGhLGuVfBYXfwjKp"
+def dbg_die(msg):
+    print(">>> DBG_DIE MSG BEGIN")
+    pprint(msg)
+    print(">>> DBG_DIE MSG END")
+    input(">>> HIT ENTER TO EXIT")
+    exit(1)
 
 class DiscogAPIInterface():
     def __init__(self, isPresentation = False):
@@ -40,7 +44,20 @@ class DiscogAPIInterface():
         logging.basicConfig(format='(%(asctime)s)%(levelname)s: %(message)s.', datefmt='%H:%M:%S', level=logging.DEBUG)
 
     def queryArtistInfo(self, artist_id):
-        return {}
+        response = bytearray()
+        msg = bytearray()
+        msg += b'GET /artists/465904 HTTP/1.1\r\n'
+        msg += b'Host: api.discogs.com\r\n'
+        msg += b'User-Agent: matheusanmoredes/0.1 +https://github.com/matheusanmo/redes2022atv1\r\n'
+        msg += b'Authorization: Discogs token=rqaaEKqAJVpnZsPJfyYXuWOGZZZwTMWrAaMiRKJY\r\n'
+        msg += b'\r\n'
+        sent_bytes = self.ssl_sock.sendall(msg)
+        while recv := self.ssl_sock.recv(4096):
+            response += recv
+            if recv == b'0\r\n\r\n':
+                break
+        dbg_die(response)
+        #from IPython.core.debugger import set_trace; set_trace()
 
 def main():
     dapi = DiscogAPIInterface()
@@ -50,38 +67,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-#import socket
-#
-#HOST = 'example.com'    # The remote host
-#PORT = 80              # The same port as used by the server
-#http_msg = (b"GET / HTTP/1.1\n"
-#            b"Host: example.com\n"
-#            b"User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:105.0) Gecko/20100101 Firefox/105.0\n"
-#            b"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\n"
-#            b"Accept-Language: en-US,en;q=0.5\n"
-#            b"Accept-Encoding: gzip, deflate\n"
-#            b"Connection: keep-alive\n"
-#            b"Upgrade-Insecure-Requests: 1\n"
-#            b"If-Modified-Since: Thu, 17 Oct 2019 07:18:26 GMT\n")
-#with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#    s.connect((HOST, PORT))
-#    s.sendall(http_msg)
-#    data = s.recv(2048)
-#print('Received', repr(data))
-#
-#
-###def main():
-##    HOST = 'tcpbin.com'    # The remote host
-##    PORT = 4242              # The same port as used by the server
-##    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-##        s.connect((HOST, PORT))
-##        s.sendall(b'Hello, world')
-##        data = s.recv(1024)
-##    print('Received', repr(data))
-##    pass
-##
-##if __name__ == "__main__":
-##    main()
-#
-#
