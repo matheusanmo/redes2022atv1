@@ -1,34 +1,69 @@
-import socket
+import ssl
+import json
+import socket as S
+import logging
+import unittest
+from pprint import pprint
 
-HOST = 'example.com'    # The remote host
-PORT = 80              # The same port as used by the server
-http_msg = (b"GET / HTTP/1.1\n"
-            b"Host: example.com\n"
-            b"User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:105.0) Gecko/20100101 Firefox/105.0\n"
-            b"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\n"
-            b"Accept-Language: en-US,en;q=0.5\n"
-            b"Accept-Encoding: gzip, deflate\n"
-            b"Connection: keep-alive\n"
-            b"Upgrade-Insecure-Requests: 1\n"
-            b"If-Modified-Since: Thu, 17 Oct 2019 07:18:26 GMT\n")
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    s.sendall(http_msg)
-    data = s.recv(2048)
-print('Received', repr(data))
+CONSUMER_KEY = "SMkvCrIgyfPDvGnJSLrI"
+CONSUMER_SECRET = "NsEZUIIcKegWRHInGhLGuVfBYXfwjKp"
+
+class DiscogAPIInterface():
+    def __init__(self, isPresentation = False):
+        # isPresentation espera input apos certas acoes
+        self.set_logging()
+        logging.info("Pedimos ao OS um socket que implementa a familia de protocolos")
+        logging.info("  IPv4 (family=AF_INET) e de tipo SOCK_STREAM, ou seja: 'reliable, ")
+        logging.info("  stream-oriented e full duplex'. Este é o tipo de socket sobre o qual")
+        logging.info("  o protocolo TCP é implementado.")
+        logging.info("  Referências: `man 2 socket` e `man 7 tcp`")
+        logging.info("`logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')`")
+        self.sock = S.socket(family=S.AF_INET, type=S.SOCK_STREAM)
+        pprint(self.sock)
+
+    def set_logging(self):
+        logging.basicConfig(format='(%(asctime)s)%(levelname)s: %(message)s.', datefmt='%H:%M:%S', level=logging.DEBUG)
 
 
-##def main():
-#    HOST = 'tcpbin.com'    # The remote host
-#    PORT = 4242              # The same port as used by the server
-#    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#        s.connect((HOST, PORT))
-#        s.sendall(b'Hello, world')
-#        data = s.recv(1024)
-#    print('Received', repr(data))
-#    pass
+def main():
+    dapi = DiscogAPIInterface()
+    pass
+
+if __name__ == "__main__":
+    main()
+
+
+#import socket
 #
-#if __name__ == "__main__":
-#    main()
-
-
+#HOST = 'example.com'    # The remote host
+#PORT = 80              # The same port as used by the server
+#http_msg = (b"GET / HTTP/1.1\n"
+#            b"Host: example.com\n"
+#            b"User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:105.0) Gecko/20100101 Firefox/105.0\n"
+#            b"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\n"
+#            b"Accept-Language: en-US,en;q=0.5\n"
+#            b"Accept-Encoding: gzip, deflate\n"
+#            b"Connection: keep-alive\n"
+#            b"Upgrade-Insecure-Requests: 1\n"
+#            b"If-Modified-Since: Thu, 17 Oct 2019 07:18:26 GMT\n")
+#with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+#    s.connect((HOST, PORT))
+#    s.sendall(http_msg)
+#    data = s.recv(2048)
+#print('Received', repr(data))
+#
+#
+###def main():
+##    HOST = 'tcpbin.com'    # The remote host
+##    PORT = 4242              # The same port as used by the server
+##    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+##        s.connect((HOST, PORT))
+##        s.sendall(b'Hello, world')
+##        data = s.recv(1024)
+##    print('Received', repr(data))
+##    pass
+##
+##if __name__ == "__main__":
+##    main()
+#
+#
